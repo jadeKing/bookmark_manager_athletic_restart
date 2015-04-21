@@ -10,4 +10,6 @@ group :test do
   gem 'rspec'
   gem 'rubocop'
   gem 'rubocop-rspec'
+  gem 'database_cleaner'
+  gem 'capybara'
 end

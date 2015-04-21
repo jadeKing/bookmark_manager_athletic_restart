@@ -1,2 +1,3 @@
-require 'server'
+require './lib/server'
+
 run Sinatra::Application
