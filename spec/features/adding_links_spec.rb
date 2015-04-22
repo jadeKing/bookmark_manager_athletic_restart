@@ -12,11 +12,24 @@ feature 'User adds a new link' do
     expect(link.url).to eq('http://www.makersacademy.com/')
     expect(link.title).to eq('Makers')
   end
+
+  scenario 'with tags' do
+    visit '/'
+    add_link('http://www.makersacademy.com/',
+             'Makers',
+             %w(education ruby))
+    link = Link.first
+    # checkingfor instanceoftag not string
+    expect(link.tags.map(&:text)).to include('education', 'ruby')
+  end
+
   # mock adding link
-  def add_link(url, title)
+  # tag default so that it still passes forst test
+  def add_link(url, title, tags = [])
     within('#new-link') do
       fill_in 'url', with: url
       fill_in 'title', with: title
+      fill_in 'tags', with: tags.join(' ')
       click_button 'Add link'
     end
   end
