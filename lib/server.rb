@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'data_mapper'
+require 'rack-flash'
 
 env = ENV['RACK_ENV'] || 'development'
 
@@ -10,6 +11,7 @@ require_relative './tag'
 require_relative './user'
 
 enable :sessions
+use Rack::Flash
 set :sessions_secret, 'super secret'
 
 DataMapper.finalize
@@ -28,6 +30,7 @@ get '/tags/:text' do
 end
 
 get '/users/new' do
+  @user = User.new
   erb :'users/new'
 end
 
@@ -44,10 +47,25 @@ end
 
 # new user form
 post '/users' do
-  user = User.create(email: params[:email],
-                     password: params[:password])
-  session[:user_id] = user.id
-  redirect to('/')
+  @user = User.create(email: params[:email],
+                      password: params[:password],
+                      password_confirmation: params[:password_confirmation])
+  if @user.save
+    session[:user_id] = @user.id
+    redirect to('/')
+  else
+    flash[:notice] = 'Sorry, your passwords do not match'
+    erb :'users/new'
+  end
+end
+
+post '/set-flash' do
+  # set flash notice
+  flash[:notice] = 'Thanks for signing up!'
+  # get flash notice
+  flash[:notice]
+  # set flash entry for current request
+  flash.now[:notice] = 'Thanks for signing up!'
 end
 
 helpers do

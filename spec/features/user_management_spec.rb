@@ -5,12 +5,20 @@ feature 'User signs up' do
     expect(User.first.email).to eq('test@testable.com')
   end
 
+  scenario 'with a password that does not much' do
+    expect { sign_up('a@a.com', 'pass', 'wrong') }.to change(User, :count).by(0)
+    expect(current_path).to eq('/users')
+    expect(page).to have_content('Sorry, your passwords do not match')
+  end
+
   def sign_up(email = 'test@testable.com',
-              password = 'oranges!')
+              password = 'oranges!',
+              password_confirmation = 'oranges!')
     visit '/users/new'
     expect(page.status_code).to eq(200)
     fill_in :email, with: email
     fill_in :password, with: password
+    fill_in :password_confirmation, with: password_confirmation
     click_button 'Sign up'
   end
 
