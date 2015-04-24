@@ -4,6 +4,7 @@ require 'rack-flash'
 require_relative './link'
 require_relative './tag'
 require_relative './user'
+require_relative './helpers'
 require_relative './data_mapper_setup'
 
 enable :sessions
@@ -86,8 +87,4 @@ delete '/sessions' do
   redirect('/')
 end
 
-helpers do
-  def current_user
-    @current_user ||= User.get(session[:user_id]) if session[:user_id]
-  end
-end
+helpers Helpers
