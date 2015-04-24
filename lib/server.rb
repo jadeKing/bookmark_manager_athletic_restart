@@ -1,22 +1,15 @@
 require 'sinatra'
 require 'data_mapper'
 require 'rack-flash'
-
-env = ENV['RACK_ENV'] || 'development'
-
-DataMapper.setup(:default, "postgres://localhost/bookmark_manager_#{env}")
-
 require_relative './link'
 require_relative './tag'
 require_relative './user'
+require_relative './data_mapper_setup'
 
 enable :sessions
 use Rack::Flash
+use Rack::MethodOverride
 set :sessions_secret, 'super secret'
-
-DataMapper.finalize
-
-DataMapper.auto_upgrade!
 
 get '/' do
   @links = Link.all
@@ -32,6 +25,24 @@ end
 get '/users/new' do
   @user = User.new
   erb :'users/new'
+end
+
+get '/sessions/new' do
+  erb :'sessions/new'
+end
+
+post '/sessions' do
+  email = params[:email]
+  password = params[:password]
+  user = User.authenticate(email, password)
+
+  if user
+    session[:user_id] = user.id
+    redirect to('/')
+  else
+    flash[:errors] = ['The email or password is incorrect']
+    erb :'sessions/new'
+  end
 end
 
 # new links form submission
@@ -54,7 +65,8 @@ post '/users' do
     session[:user_id] = @user.id
     redirect to('/')
   else
-    flash[:notice] = 'Sorry, your passwords do not match'
+    # take messages from datamapper
+    flash.now[:errors] = @user.errors.full_messages
     erb :'users/new'
   end
 end
@@ -66,6 +78,12 @@ post '/set-flash' do
   flash[:notice]
   # set flash entry for current request
   flash.now[:notice] = 'Thanks for signing up!'
+end
+
+delete '/sessions' do
+  session[:user_id] = nil
+  flash[:notice] = "Good bye!"
+  redirect('/')
 end
 
 helpers do
