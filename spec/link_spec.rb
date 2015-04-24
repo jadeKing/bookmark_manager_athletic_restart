@@ -1,4 +1,3 @@
-require 'link'
 describe Link do
 
   context 'Demonstration of how datamapper works' do
