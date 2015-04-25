@@ -1,8 +1,8 @@
 feature 'User adds a new link' do
-  scenario 'when on the homepage' do
+  scenario 'when on the add new link page' do
     # check db empty
     expect(Link.count).to eq(0)
-    visit '/'
+    visit '/links/new'
     # add link for testing
     add_link('http://www.makersacademy.com/', 'Makers')
     # check link added
@@ -14,7 +14,7 @@ feature 'User adds a new link' do
   end
 
   scenario 'with tags' do
-    visit '/'
+    visit '/links/new'
     add_link('http://www.makersacademy.com/',
              'Makers',
              %w(education ruby))

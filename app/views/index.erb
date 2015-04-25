@@ -1,16 +1,9 @@
-<h1>Bookmark Manager</h1>
-
+<h1>Welcome to the Bookmark Manager</h1>
 <h2>Links</h2>
-<ul>
-  <% @links.each do |link| %>
-    <li><a href='<%= link.url %>'><%= link.title %></a></li>
-  <% end %>
-</ul>
-<div id="new-link">
-  <form action="/links" method="post">
-    Url: <input type="text" name="url"/>
-    Title <input type="text" name="title"/>
-    Tags: <input type="text" name="tags"/>
-    <input type="submit" value="Add link"/>
-  </form>
+<div class="links-container">
+  <ul id="links">
+    <% @links.each do |link| %>
+      <%= partial :link, locals: {link: link} %>
+    <% end %>
+  </ul>
 </div>
